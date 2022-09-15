@@ -1,7 +1,23 @@
-function main(){
+function checkWebGL(canvas) {
+    var contexts = ["webgl", "expreimental-webgl", "webkit-3d", "moz-webggl"], gl;
+    for (var i = 0; i<contexts.length; i++){
+        try{
+            gl = canvas.getContext(contexts[i]);
+        } catch(e) {}
+        if (gl) {
+            break;
+        }
+    }
+    if (!gl){
+        alert("WebGL not available, sorry! Please use a new version of Chrome or Firefox.");
+    }
+    return gl;
+}
+
+function main() {
     var canvas = document.getElementById("my-canvas");
-    var gl = canvas.getContext("webgl");
-    
+    var gl = checkWebGL(canvas);
+
     var rVertices = [
         -0.9, 0.75,      // 1
         -0.9, -0.75,     // 2
@@ -13,6 +29,7 @@ function main(){
         -0.4, 0.325,
         -0.55, 0.75
     ];
+
     var buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rVertices), gl.STATIC_DRAW);
@@ -23,7 +40,7 @@ function main(){
     void main() {
         float x = aPosition.x;
         float y = aPosition.y;
-        gl_PointSize = 5.0;
+        gl_PointSize = 3.0;
         gl_Position = vec4(x,y,0.0,1.0);
     }`;
 
@@ -44,7 +61,7 @@ function main(){
     `;
     var fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
     gl.shaderSource(fragmentShaderObject, fragmentShaderCode);
-    gl.compileShader(fragmentShaderObject); 
+    gl.compileShader(fragmentShaderObject);
 
 
     // Shader Program
@@ -58,15 +75,10 @@ function main(){
     gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(aPosition)
 
-    gl.clearColor(1.0,      0.65,    0.0,    1.0);
-
-    //            Merah     Hijau   Biru    Transparansi
+    gl.clearColor(0.4, 0.7, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.drawArrays(gl.POINTS, 0, 9);
     gl.drawArrays(gl.LINE_LOOP, 0, 9);
-    // gl.drawArrays(gl.LINE_STRIP, 0, 4);
-    // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    // gl.drawArrays(gl.TRIANGLE_FAN, 0, 4)
 
 }
