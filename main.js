@@ -61,7 +61,7 @@ function main() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     drawR();
-    // drawY();
+    drawY();
 }
 
 function drawR() {
@@ -122,23 +122,44 @@ function drawY() {
         return;
     }
     gl.drawArrays(gl.POINTS, 0, n);
-    gl.drawArrays(gl.LINE_LOOP, 0, n);
+    gl.drawArrays(gl.TRIANGLES, 0, n);
 }
 
 function initYBuffers() {
     var vertices = new Float32Array([
-        -0.55, 0.75,     // 1
-        -0.32, 0.1,     // 2
-        -0.32, -0.75,   // 3
-        -0.15, -0.755,   // 4
-        -0.15, 0.1,      // 5
-        0.08, 0.75,     // 6
-        -0.1, 0.75,    // 7
-        -0.235, 0.4,    // 8
-        -0.37, 0.75     // 9
+        -0.40, 0.75,     
+        -0.17, 0.1,     
+        -0.22, 0.75,    
+
+        -0.22, 0.75,    
+        -0.085, 0.4,      
+        -0.17, 0.1,     
+
+        0.23, 0.75,    
+        0.0, 0.1,      
+        0.03, 0.75,     
+
+        0.05, 0.75,    
+        0.0, 0.1,      
+        -0.085, 0.4,  
+        
+        -0.085, 0.4, 
+        -0.17, 0.1,       
+        0.0, 0.1, 
+
+        -0.17, 0.1,       
+        -0.17, -0.75,
+        0.0, -0.75,  
+
+        0.0, 0.1,        
+        -0.17, 0.1,
+        0.0, -0.75,  
+        
+        
+    
 
     ]);
-    var n = 9;
+    var n = 21;
 
     var vertexBuffer = gl.createBuffer();
     if (!vertexBuffer) {
