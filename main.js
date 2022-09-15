@@ -194,10 +194,7 @@ function init5Buffers() {
         0.05, 0.55,
         0.05, 0.55,
         0.05, 0.2
-        // 0.4, -0.55,
-        // 0.05, -0.55
     ];
-    var yTemp = 0.0;
     for (let i = 0; i < 180; i++) {
         let radiansX = i * Math.PI / 180;
         let radiansY = i * Math.PI / 180;
@@ -300,4 +297,3 @@ function init8Buffers() {
     gl.enableVertexAttribArray(aPosition);
     return n;
 }
-
