@@ -63,6 +63,7 @@ function main() {
     drawR();
     drawY();
     draw5();
+    draw8();
 }
 
 function drawR() {
@@ -195,19 +196,90 @@ function init5Buffers() {
         0.05, 0.2
         // 0.4, -0.55,
         // 0.05, -0.55
-    ]
+    ];
     var yTemp = 0.0;
-    for(let i = 0; i<180; i++){
-        let radiansX = i * Math.PI/180;
-        let radiansY = i * Math.PI/180;
-        var x = 0.05 + Math.sin(radiansX)/3;
-        var y = -Math.cos(radiansY)/2.8 - 0.16
+    for (let i = 0; i < 180; i++) {
+        let radiansX = i * Math.PI / 180;
+        let radiansY = i * Math.PI / 180;
+        var x = 0.05 + Math.sin(radiansX) / 3;
+        var y = -Math.cos(radiansY) / 2.8 - 0.16
         console.log(x)
         yTemp = y;
         vertices.push(x);
         vertices.push(y);
     }
     var n = 182;
+
+    var vertexBuffer = gl.createBuffer();
+    if (!vertexBuffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
+    }
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+    var aPosition = gl.getAttribLocation(shaderProgram, 'aPosition');
+    if (aPosition < 0) {
+        console.log('Failed to get the storage location of aPosition');
+        return -1;
+    }
+
+    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(aPosition);
+    return n;
+}
+
+function draw8() {
+    var n = init8Buffers();
+    if (n < 0) {
+        console.log('Failed to set the positions of the vertices');
+        return;
+    }
+    gl.drawArrays(gl.POINTS, 0, n);
+    gl.drawArrays(gl.LINES, 0, n);
+}
+
+function init8Buffers() {
+    var vertices = [];
+
+    for (let i = 0; i < 180; i++) {
+        var radiansX = i * Math.PI / 180;
+        var radiansY = i * Math.PI / 180;
+        var x = -Math.sin(radiansX) / 6 + 0.7;
+        var y = -Math.cos(radiansY) / 3.5 + 0.28;
+        vertices.push(x);
+        vertices.push(y);
+    }
+
+    for (let i = 0; i < 180; i++) {
+        var radiansX = i * Math.PI / 180;
+        var radiansY = i * Math.PI / 180;
+        var x = Math.sin(radiansX) / 6 + 0.7;
+        var y = -Math.cos(radiansY) / 3.5 + 0.28;
+        vertices.push(x);
+        vertices.push(y);
+    }
+   
+    for (let i = 0; i < 180; i++) {
+        var radiansX = i * Math.PI / 180;
+        var radiansY = i * Math.PI / 180;
+        var x = -Math.sin(radiansX) / 5.4 + 0.7;
+        var y = -Math.cos(radiansY) / 3.5 - 0.29;
+        vertices.push(x);
+        vertices.push(y);
+    }
+
+    for (let i = 0; i < 180; i++) {
+        var radiansX = i * Math.PI / 180;
+        var radiansY = i * Math.PI / 180;
+        var x = Math.sin(radiansX) / 5.4 + 0.7;
+        var y = -Math.cos(radiansY) / 3.5 - 0.29;
+        vertices.push(x);
+        vertices.push(y);
+    }
+
+    var n = 720;
 
     var vertexBuffer = gl.createBuffer();
     if (!vertexBuffer) {
