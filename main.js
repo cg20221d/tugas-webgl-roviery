@@ -61,6 +61,7 @@ function main() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     drawR();
+    drawY();
 }
 
 function drawR() {
@@ -75,15 +76,15 @@ function drawR() {
 
 function initRBuffers() {
     var vertices = new Float32Array([
-        -0.9, 0.75,     // 1
-        -0.9, -0.75,    // 2
-        -0.7, -0.75,    // 3
-        -0.7, -0.25,    // 4
-        -0.65, -0.75,   // 5
-        -0.45, -0.75,   // 6
-        -0.55, -0.1,    // 7
-        -0.4, 0.325,    // 8
-        -0.55, 0.75     // 9
+        -0.95, 0.75,     // 1
+        -0.95, -0.75,    // 2
+        -0.75, -0.75,    // 3
+        -0.75, -0.25,    // 4
+        -0.70, -0.75,   // 5
+        -0.50, -0.75,   // 6
+        -0.60, -0.1,    // 7
+        -0.45, 0.325,    // 8
+        -0.60, 0.75     // 9
     ]);
     var n = 9;
 
@@ -106,3 +107,49 @@ function initRBuffers() {
     gl.enableVertexAttribArray(aPosition);
     return n;
 }
+
+function drawY() {
+    var n = initYBuffers();
+    if (n < 0) {
+        console.log('Failed to set the positions of the vertices');
+        return;
+    }
+    gl.drawArrays(gl.POINTS, 0, n);
+    gl.drawArrays(gl.LINE_LOOP, 0, n);
+}
+
+function initYBuffers() {
+    var vertices = new Float32Array([
+        -0.55, 0.75,     // 1
+        -0.32, 0.1,     // 2
+        -0.32, -0.75,   // 3
+        -0.15, -0.755,   // 4
+        -0.15, 0.1,      // 5
+        0.08, 0.75,     // 6
+        -0.1, 0.75,    // 7
+        -0.235, 0.4,    // 8
+        -0.37, 0.75     // 9
+
+    ]);
+    var n = 9;
+
+    var vertexBuffer = gl.createBuffer();
+    if (!vertexBuffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
+    }
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    var aPosition = gl.getAttribLocation(shaderProgram, 'aPosition');
+    if (aPosition < 0) {
+        console.log('Failed to get the storage location of aPosition');
+        return -1;
+    }
+
+    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(aPosition);
+    return n;
+}
+
