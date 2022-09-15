@@ -93,8 +93,13 @@ function initRBuffers() {
         -0.9, 0.55,
         -0.58, 0.55,
         -0.74, 0.15,
+
+        -0.58, 0.55,
+        -0.58, 0.15,
+        -0.74, 0.15
+
     ]);
-    var n = 12;
+    var n = 15;
 
     var vertexBuffer = gl.createBuffer();
     if (!vertexBuffer) {
