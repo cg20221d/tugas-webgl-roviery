@@ -62,6 +62,7 @@ function main() {
 
     drawR();
     drawY();
+    draw5();
 }
 
 function drawR() {
@@ -70,22 +71,21 @@ function drawR() {
         console.log('Failed to set the positions of the vertices');
         return;
     }
-    gl.drawArrays(gl.POINTS, 0, n);
     gl.drawArrays(gl.TRIANGLES, 0, n);
-    
+
 }
 
 function initRBuffers() {
     var vertices = new Float32Array([
-        -0.95, 0.0,     
-        -0.95, -0.55,   
-        -0.75, -0.55,   
+        -0.95, 0.0,
+        -0.95, -0.55,
+        -0.75, -0.55,
 
-        -0.95, 0.55,    
-        -0.95, 0.15,     
-        -0.7, -0.55,   
+        -0.95, 0.55,
+        -0.95, 0.15,
+        -0.7, -0.55,
 
-        -0.95, 0.55,   
+        -0.95, 0.55,
         -0.7, -0.55,
         -0.54, -0.55,
 
@@ -121,39 +121,38 @@ function drawY() {
         console.log('Failed to set the positions of the vertices');
         return;
     }
-    gl.drawArrays(gl.POINTS, 0, n);
     gl.drawArrays(gl.TRIANGLES, 0, n);
 }
 
 function initYBuffers() {
     var vertices = new Float32Array([
-        -0.55, 0.55,     
-        -0.35, 0.1,     
-        -0.37, 0.55,    
+        -0.55, 0.55,
+        -0.35, 0.1,
+        -0.37, 0.55,
 
-        -0.37, 0.55,    
-        -0.35, 0.1,      
-        -0.29, 0.4,     
+        -0.37, 0.55,
+        -0.35, 0.1,
+        -0.29, 0.4,
 
-        -0.02, 0.55,    
-        -0.22, 0.1,      
-        -0.2, 0.55,     
-
-        -0.2, 0.55,   
-        -0.22, 0.1,          
-        -0.29, 0.4,     
-        
-        -0.35, 0.1,  
-        -0.22, 0.1,       
-        -0.29, 0.4,  
-
-        -0.22, 0.1,       
-        -0.22, -0.55,
-        -0.35, -0.55,  
-
-        -0.35, 0.1,        
+        -0.02, 0.55,
         -0.22, 0.1,
-        -0.35, -0.55,  
+        -0.2, 0.55,
+
+        -0.2, 0.55,
+        -0.22, 0.1,
+        -0.29, 0.4,
+
+        -0.35, 0.1,
+        -0.22, 0.1,
+        -0.29, 0.4,
+
+        -0.22, 0.1,
+        -0.22, -0.55,
+        -0.35, -0.55,
+
+        -0.35, 0.1,
+        -0.22, 0.1,
+        -0.35, -0.55,
 
     ]);
     var n = 21;
@@ -166,6 +165,58 @@ function initYBuffers() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    var aPosition = gl.getAttribLocation(shaderProgram, 'aPosition');
+    if (aPosition < 0) {
+        console.log('Failed to get the storage location of aPosition');
+        return -1;
+    }
+
+    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(aPosition);
+    return n;
+}
+
+function draw5() {
+    var n = init5Buffers();
+    if (n < 0) {
+        console.log('Failed to set the positions of the vertices');
+        return;
+    }
+    gl.drawArrays(gl.POINTS, 0, n);
+    gl.drawArrays(gl.LINES, 0, n);
+}
+
+function init5Buffers() {
+    var vertices = [
+        0.35, 0.55,
+        0.05, 0.55,
+        0.05, 0.55,
+        0.05, 0.2
+        // 0.4, -0.55,
+        // 0.05, -0.55
+    ]
+    var yTemp = 0.0;
+    for(let i = 0; i<180; i++){
+        let radiansX = i * Math.PI/180;
+        let radiansY = i * Math.PI/180;
+        var x = 0.05 + Math.sin(radiansX)/3;
+        var y = -Math.cos(radiansY)/2.8 - 0.16
+        console.log(x)
+        yTemp = y;
+        vertices.push(x);
+        vertices.push(y);
+    }
+    var n = 182;
+
+    var vertexBuffer = gl.createBuffer();
+    if (!vertexBuffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
+    }
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
     var aPosition = gl.getAttribLocation(shaderProgram, 'aPosition');
     if (aPosition < 0) {
