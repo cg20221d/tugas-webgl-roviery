@@ -23,11 +23,12 @@ function main() {
     // Vertex Shader
     var vertexShaderCode = `
     attribute vec2 aPosition;
+    attribute vec3 aColor;
+    varying vec3 vColor;
     void main() {
-        float x = aPosition.x;
-        float y = aPosition.y;
+        vColor = aColor;
         gl_PointSize = 3.0;
-        gl_Position = vec4(x,y,0.0,1.0);
+        gl_Position = vec4(aPosition,0.0,1.0);
     }`;
 
     var vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
@@ -38,11 +39,12 @@ function main() {
     // Fragment Shader
     var fragmentShaderCode = `
     precision highp float;
+    varying vec3 vColor;
     void main() {
         float r = 0.0;
         float g = 0.0;
         float b = 1.0;
-        gl_FragColor = vec4(r, g, b, 1.0);
+        gl_FragColor = vec4(vColor, 1.0);
     }
     `;
     var fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
@@ -57,8 +59,8 @@ function main() {
     gl.linkProgram(shaderProgram);
     gl.useProgram(shaderProgram);
 
-    gl.clearColor(0.4, 0.7, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clearColor(0.75, 0.85, 0.8, 1.0);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     drawR();
     drawY();
@@ -78,39 +80,37 @@ function drawR() {
 
 function initRBuffers() {
     var vertices = new Float32Array([
-        -0.95, 0.55,
-        -0.95, -0.55,
-        -0.8, -0.55,
+        -0.95, 0.55,    1.0, 0.0, 0.15,
+        -0.95, -0.55,   1.0, 0.0, 0.15,
+        -0.8, -0.55,    1.0, 0.0, 0.15,
 
-        -0.95, 0.55,
-        -0.8, 0.55,
-        -0.8, -0.55,
+        -0.95, 0.55,    1.0, 0.0, 0.15,
+        -0.8, 0.55,     1.0, 0.0, 0.15,
+        -0.8, -0.55,    1.0, 0.0, 0.15,
 
-        -0.8, 0.55,
-        -0.65, 0.55,
-        -0.8, 0.1,
+        -0.8, 0.55,     1.0, 0.0, 0.15,
+        -0.65, 0.55,    1.0, 0.0, 0.15,
+        -0.8, 0.1,      1.0, 0.0, 0.15,
 
-        -0.65, 0.55,
-        -0.65, 0.1,
-        -0.8, 0.1,
+        -0.65, 0.55,    1.0, 0.0, 0.15,
+        -0.65, 0.1,     1.0, 0.0, 0.15,
+        -0.8, 0.1,      1.0, 0.0, 0.15,
 
-        -0.65, 0.55,
-        -0.65, 0.1,
-        -0.55, 0.35,
+        -0.65, 0.55,    1.0, 0.0, 0.15,
+        -0.65, 0.1,     1.0, 0.0, 0.15,
+        -0.55, 0.35,    1.0, 0.0, 0.15,
 
-        -0.8, -0.2,
-        -0.7, -0.55,
-        -0.8, 0.1,
+        -0.8, -0.2,     1.0, 0.0, 0.15,
+        -0.7, -0.55,    1.0, 0.0, 0.15,
+        -0.8, 0.1,      1.0, 0.0, 0.15,
 
-        -0.75, 0.1,
-        -0.7, -0.55,
-        -0.8, 0.1,
+        -0.75, 0.1,     1.0, 0.0, 0.15,
+        -0.7, -0.55,    1.0, 0.0, 0.15,
+        -0.8, 0.1,      1.0, 0.0, 0.15,
 
-        -0.75, 0.1,
-        -0.7, -0.55,
-        -0.55, -0.55,
-
-
+        -0.75, 0.1,     1.0, 0.0, 0.15,
+        -0.7, -0.55,    1.0, 0.0, 0.15,
+        -0.55, -0.55,   1.0, 0.0, 0.15,
     ]);
     var n = 24;
 
@@ -123,14 +123,27 @@ function initRBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-    var aPosition = gl.getAttribLocation(shaderProgram, 'aPosition');
-    if (aPosition < 0) {
-        console.log('Failed to get the storage location of aPosition');
-        return -1;
-    }
+    var posAttrib = gl.getAttribLocation(shaderProgram, 'aPosition');
+    gl.vertexAttribPointer(
+        posAttrib, 
+        2, 
+        gl.FLOAT, 
+        gl.FALSE, 
+        5 * Float32Array.BYTES_PER_ELEMENT, 
+        0);
+    gl.enableVertexAttribArray(posAttrib);
 
-    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(aPosition);
+    var colorAttrib = gl.getAttribLocation(shaderProgram, 'aColor');
+    gl.vertexAttribPointer(
+        colorAttrib, 
+        3, 
+        gl.FLOAT, 
+        gl.FALSE, 
+        5 * Float32Array.BYTES_PER_ELEMENT, 
+        2 * Float32Array.BYTES_PER_ELEMENT);
+    gl.enableVertexAttribArray(colorAttrib);
+
+
     return n;
 }
 
@@ -145,33 +158,33 @@ function drawY() {
 
 function initYBuffers() {
     var vertices = new Float32Array([
-        -0.55, 0.55,
-        -0.35, 0.1,
-        -0.37, 0.55,
+        -0.55, 0.55,    0.5, 0.5, 1.0,
+        -0.35, 0.1,     0.5, 0.5, 1.0,
+        -0.37, 0.55,    0.5, 0.5, 1.0,
 
-        -0.37, 0.55,
-        -0.35, 0.1,
-        -0.29, 0.4,
+        -0.37, 0.55,    0.5, 0.5, 1.0,
+        -0.35, 0.1,     0.5, 0.5, 1.0,
+        -0.29, 0.4,     0.5, 0.5, 1.0,
 
-        -0.02, 0.55,
-        -0.22, 0.1,
-        -0.2, 0.55,
+        -0.02, 0.55,    0.5, 0.5, 1.0,
+        -0.22, 0.1,     0.5, 0.5, 1.0,
+        -0.2, 0.55,     0.5, 0.5, 1.0,
 
-        -0.2, 0.55,
-        -0.22, 0.1,
-        -0.29, 0.4,
+        -0.2, 0.55,     0.5, 0.5, 1.0,
+        -0.22, 0.1,     0.5, 0.5, 1.0,
+        -0.29, 0.4,     0.5, 0.5, 1.0,
 
-        -0.35, 0.1,
-        -0.22, 0.1,
-        -0.29, 0.4,
+        -0.35, 0.1,     0.5, 0.5, 1.0,
+        -0.22, 0.1,     0.5, 0.5, 1.0,
+        -0.29, 0.4,     0.5, 0.5, 1.0,
 
-        -0.22, 0.1,
-        -0.22, -0.55,
-        -0.35, -0.55,
+        -0.22, 0.1,     0.5, 0.5, 1.0,
+        -0.22, -0.55,   0.5, 0.5, 1.0,
+        -0.35, -0.55,   0.5, 0.5, 1.0,
 
-        -0.35, 0.1,
-        -0.22, 0.1,
-        -0.35, -0.55,
+        -0.35, 0.1,     0.5, 0.5, 1.0,
+        -0.22, 0.1,     0.5, 0.5, 1.0,
+        -0.35, -0.55,   0.5, 0.5, 1.0,
 
     ]);
     var n = 21;
@@ -185,14 +198,25 @@ function initYBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-    var aPosition = gl.getAttribLocation(shaderProgram, 'aPosition');
-    if (aPosition < 0) {
-        console.log('Failed to get the storage location of aPosition');
-        return -1;
-    }
+    var posAttrib = gl.getAttribLocation(shaderProgram, 'aPosition');
+    gl.vertexAttribPointer(
+        posAttrib, 
+        2, 
+        gl.FLOAT, 
+        gl.FALSE, 
+        5 * Float32Array.BYTES_PER_ELEMENT, 
+        0);
+    gl.enableVertexAttribArray(posAttrib);
 
-    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(aPosition);
+    var colorAttrib = gl.getAttribLocation(shaderProgram, 'aColor');
+    gl.vertexAttribPointer(
+        colorAttrib, 
+        3, 
+        gl.FLOAT, 
+        gl.FALSE, 
+        5 * Float32Array.BYTES_PER_ELEMENT, 
+        2 * Float32Array.BYTES_PER_ELEMENT);
+    gl.enableVertexAttribArray(colorAttrib);
     return n;
 }
 
@@ -208,10 +232,10 @@ function draw5() {
 
 function init5Buffers() {
     var vertices = [
-        0.35, 0.55,
-        0.05, 0.55,
-        0.05, 0.55,
-        0.05, 0.2
+        0.35, 0.55, 0.0,0.0,0.0,
+        0.05, 0.55, 0.0,0.0,0.0,
+        0.05, 0.55, 0.0,0.0,0.0,
+        0.05, 0.2,  0.0,0.0,0.0,
     ];
     for (let i = 0; i < 180; i++) {
         let radiansX = i * Math.PI / 180;
@@ -222,6 +246,9 @@ function init5Buffers() {
         yTemp = y;
         vertices.push(x);
         vertices.push(y);
+        vertices.push(0.0);
+        vertices.push(0.0);
+        vertices.push(0.0);
     }
     var n = 182;
 
@@ -234,14 +261,25 @@ function init5Buffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
-    var aPosition = gl.getAttribLocation(shaderProgram, 'aPosition');
-    if (aPosition < 0) {
-        console.log('Failed to get the storage location of aPosition');
-        return -1;
-    }
+    var posAttrib = gl.getAttribLocation(shaderProgram, 'aPosition');
+    gl.vertexAttribPointer(
+        posAttrib, 
+        2, 
+        gl.FLOAT, 
+        gl.FALSE, 
+        5 * Float32Array.BYTES_PER_ELEMENT, 
+        0);
+    gl.enableVertexAttribArray(posAttrib);
 
-    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(aPosition);
+    var colorAttrib = gl.getAttribLocation(shaderProgram, 'aColor');
+    gl.vertexAttribPointer(
+        colorAttrib, 
+        3, 
+        gl.FLOAT, 
+        gl.FALSE, 
+        5 * Float32Array.BYTES_PER_ELEMENT, 
+        2 * Float32Array.BYTES_PER_ELEMENT);
+    gl.enableVertexAttribArray(colorAttrib);
     return n;
 }
 
