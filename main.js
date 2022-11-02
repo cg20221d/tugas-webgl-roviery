@@ -1,11 +1,12 @@
 var gl, canvas, shaderProgram;
+var horizontalSpeed, horizontalDelta;
 
 function checkWebGL(canvas) {
     var contexts = ["webgl", "expreimental-webgl", "webkit-3d", "moz-webggl"], gl;
     for (var i = 0; i < contexts.length; i++) {
         try {
             gl = canvas.getContext(contexts[i]);
-        } catch (e) { }
+        } catch (e) {}
         if (gl) {
             break;
         }
@@ -31,13 +32,12 @@ function main() {
     void main() {
         vColor = aColor;
         gl_PointSize = 3.0;
-        gl_Position = vec4(aPosition,0.0,1.0);
+        gl_Position = vec4(aPosition, 0.0, 1.0);
     }`;
 
     var vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
     gl.shaderSource(vertexShaderObject, vertexShaderCode);
     gl.compileShader(vertexShaderObject);
-
 
     // Fragment Shader
     var fragmentShaderCode = `
@@ -62,18 +62,28 @@ function main() {
     gl.linkProgram(shaderProgram);
     gl.useProgram(shaderProgram);
 
-    var uModel = gl.getUniformLocation(shaderProgram, 'uModel');
-    var uView = gl.getUniformLocation(shaderProgram, 'uView');
-    var uProj = gl.getUniformLocation(shaderProgram, 'uProj');
+    // MVP Setup
+    var uModel = gl.getUniformLocation(shaderProgram, "uModel");
+    var uView = gl.getUniformLocation(shaderProgram, "uView");
+    var uProj = gl.getUniformLocation(shaderProgram, "uProj");
 
     var modelMatrix = new Float32Array(16);
-	var viewMatrix = new Float32Array(16);
-	var projMatrix = new Float32Array(16);
-	glMatrix.mat4.identity(modelMatrix);
-	glMatrix.mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
-	glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(70), canvas.clientWidth / canvas.clientHeight, 0.5, 50.0);
-    
-    function render(){
+    var viewMatrix = new Float32Array(16);
+    var projMatrix = new Float32Array(16);
+    glMatrix.mat4.identity(modelMatrix);
+    glMatrix.mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
+    glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(70), canvas.clientWidth / canvas.clientHeight, 0.5, 50.0);
+
+    gl.uniformMatrix4fv(uModel, gl.False, modelMatrix);
+    gl.uniformMatrix4fv(uView, gl.False, viewMatrix);
+    gl.uniformMatrix4fv(uProj, gl.False, projMatrix);
+
+    // Variabel Lokal
+    horizontalSpeed = 0.0258;
+    horizontalDelta = 0.0;
+
+
+    function render() {
         gl.clearColor(0.75, 0.85, 0.8, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         drawR();
@@ -81,7 +91,7 @@ function main() {
         draw5();
         draw8();
     }
-    setInterval(render, 1000/60);
+    setInterval(render, 1000 / 60);
 }
 
 function drawR() {
@@ -96,37 +106,37 @@ function drawR() {
 
 function initRBuffers() {
     var vertices = new Float32Array([
-        -0.95, 0.55,    1.0, 0.0, 0.15,
-        -0.95, -0.55,   1.0, 0.0, 0.15,
-        -0.8, -0.55,    1.0, 0.0, 0.15,
+        -0.95, 0.55, 1.0, 0.0, 0.15,
+        -0.95, -0.55, 1.0, 0.0, 0.15,
+        -0.8, -0.55, 1.0, 0.0, 0.15,
 
-        -0.95, 0.55,    1.0, 0.0, 0.15,
-        -0.8, 0.55,     1.0, 0.0, 0.15,
-        -0.8, -0.55,    1.0, 0.0, 0.15,
+        -0.95, 0.55, 1.0, 0.0, 0.15,
+        -0.8, 0.55, 1.0, 0.0, 0.15,
+        -0.8, -0.55, 1.0, 0.0, 0.15,
 
-        -0.8, 0.55,     1.0, 0.0, 0.15,
-        -0.65, 0.55,    1.0, 0.0, 0.15,
-        -0.8, 0.1,      1.0, 0.0, 0.15,
+        -0.8, 0.55, 1.0, 0.0, 0.15,
+        -0.65, 0.55, 1.0, 0.0, 0.15,
+        -0.8, 0.1, 1.0, 0.0, 0.15,
 
-        -0.65, 0.55,    1.0, 0.0, 0.15,
-        -0.65, 0.1,     1.0, 0.0, 0.15,
-        -0.8, 0.1,      1.0, 0.0, 0.15,
+        -0.65, 0.55, 1.0, 0.0, 0.15,
+        -0.65, 0.1, 1.0, 0.0, 0.15,
+        -0.8, 0.1, 1.0, 0.0, 0.15,
 
-        -0.65, 0.55,    1.0, 0.0, 0.15,
-        -0.65, 0.1,     1.0, 0.0, 0.15,
-        -0.55, 0.35,    1.0, 0.0, 0.15,
+        -0.65, 0.55, 1.0, 0.0, 0.15,
+        -0.65, 0.1, 1.0, 0.0, 0.15,
+        -0.55, 0.35, 1.0, 0.0, 0.15,
 
-        -0.8, -0.2,     1.0, 0.0, 0.15,
-        -0.7, -0.55,    1.0, 0.0, 0.15,
-        -0.8, 0.1,      1.0, 0.0, 0.15,
+        -0.8, -0.2, 1.0, 0.0, 0.15,
+        -0.7, -0.55, 1.0, 0.0, 0.15,
+        -0.8, 0.1, 1.0, 0.0, 0.15,
 
-        -0.75, 0.1,     1.0, 0.0, 0.15,
-        -0.7, -0.55,    1.0, 0.0, 0.15,
-        -0.8, 0.1,      1.0, 0.0, 0.15,
+        -0.75, 0.1, 1.0, 0.0, 0.15,
+        -0.7, -0.55, 1.0, 0.0, 0.15,
+        -0.8, 0.1, 1.0, 0.0, 0.15,
 
-        -0.75, 0.1,     1.0, 0.0, 0.15,
-        -0.7, -0.55,    1.0, 0.0, 0.15,
-        -0.55, -0.55,   1.0, 0.0, 0.15,
+        -0.75, 0.1, 1.0, 0.0, 0.15,
+        -0.7, -0.55, 1.0, 0.0, 0.15,
+        -0.55, -0.55, 1.0, 0.0, 0.15,
     ]);
     var n = 24;
 
@@ -141,21 +151,21 @@ function initRBuffers() {
 
     var posAttrib = gl.getAttribLocation(shaderProgram, 'aPosition');
     gl.vertexAttribPointer(
-        posAttrib, 
-        2, 
-        gl.FLOAT, 
-        gl.FALSE, 
-        5 * Float32Array.BYTES_PER_ELEMENT, 
+        posAttrib,
+        2,
+        gl.FLOAT,
+        gl.FALSE,
+        5 * Float32Array.BYTES_PER_ELEMENT,
         0);
     gl.enableVertexAttribArray(posAttrib);
 
     var colorAttrib = gl.getAttribLocation(shaderProgram, 'aColor');
     gl.vertexAttribPointer(
-        colorAttrib, 
-        3, 
-        gl.FLOAT, 
-        gl.FALSE, 
-        5 * Float32Array.BYTES_PER_ELEMENT, 
+        colorAttrib,
+        3,
+        gl.FLOAT,
+        gl.FALSE,
+        5 * Float32Array.BYTES_PER_ELEMENT,
         2 * Float32Array.BYTES_PER_ELEMENT);
     gl.enableVertexAttribArray(colorAttrib);
 
@@ -174,33 +184,33 @@ function drawY() {
 
 function initYBuffers() {
     var vertices = new Float32Array([
-        -0.55, 0.55,    0.5, 0.5, 1.0,
-        -0.35, 0.1,     0.5, 0.5, 1.0,
-        -0.37, 0.55,    0.5, 0.5, 1.0,
+        -0.55, 0.55, 0.5, 0.5, 1.0,
+        -0.35, 0.1, 0.5, 0.5, 1.0,
+        -0.37, 0.55, 0.5, 0.5, 1.0,
 
-        -0.37, 0.55,    0.5, 0.5, 1.0,
-        -0.35, 0.1,     0.5, 0.5, 1.0,
-        -0.29, 0.4,     0.5, 0.5, 1.0,
+        -0.37, 0.55, 0.5, 0.5, 1.0,
+        -0.35, 0.1, 0.5, 0.5, 1.0,
+        -0.29, 0.4, 0.5, 0.5, 1.0,
 
-        -0.02, 0.55,    0.5, 0.5, 1.0,
-        -0.22, 0.1,     0.5, 0.5, 1.0,
-        -0.2, 0.55,     0.5, 0.5, 1.0,
+        -0.02, 0.55, 0.5, 0.5, 1.0,
+        -0.22, 0.1, 0.5, 0.5, 1.0,
+        -0.2, 0.55, 0.5, 0.5, 1.0,
 
-        -0.2, 0.55,     0.5, 0.5, 1.0,
-        -0.22, 0.1,     0.5, 0.5, 1.0,
-        -0.29, 0.4,     0.5, 0.5, 1.0,
+        -0.2, 0.55, 0.5, 0.5, 1.0,
+        -0.22, 0.1, 0.5, 0.5, 1.0,
+        -0.29, 0.4, 0.5, 0.5, 1.0,
 
-        -0.35, 0.1,     0.5, 0.5, 1.0,
-        -0.22, 0.1,     0.5, 0.5, 1.0,
-        -0.29, 0.4,     0.5, 0.5, 1.0,
+        -0.35, 0.1, 0.5, 0.5, 1.0,
+        -0.22, 0.1, 0.5, 0.5, 1.0,
+        -0.29, 0.4, 0.5, 0.5, 1.0,
 
-        -0.22, 0.1,     0.5, 0.5, 1.0,
-        -0.22, -0.55,   0.5, 0.5, 1.0,
-        -0.35, -0.55,   0.5, 0.5, 1.0,
+        -0.22, 0.1, 0.5, 0.5, 1.0,
+        -0.22, -0.55, 0.5, 0.5, 1.0,
+        -0.35, -0.55, 0.5, 0.5, 1.0,
 
-        -0.35, 0.1,     0.5, 0.5, 1.0,
-        -0.22, 0.1,     0.5, 0.5, 1.0,
-        -0.35, -0.55,   0.5, 0.5, 1.0,
+        -0.35, 0.1, 0.5, 0.5, 1.0,
+        -0.22, 0.1, 0.5, 0.5, 1.0,
+        -0.35, -0.55, 0.5, 0.5, 1.0,
 
     ]);
     var n = 21;
@@ -216,21 +226,21 @@ function initYBuffers() {
 
     var posAttrib = gl.getAttribLocation(shaderProgram, 'aPosition');
     gl.vertexAttribPointer(
-        posAttrib, 
-        2, 
-        gl.FLOAT, 
-        gl.FALSE, 
-        5 * Float32Array.BYTES_PER_ELEMENT, 
+        posAttrib,
+        2,
+        gl.FLOAT,
+        gl.FALSE,
+        5 * Float32Array.BYTES_PER_ELEMENT,
         0);
     gl.enableVertexAttribArray(posAttrib);
 
     var colorAttrib = gl.getAttribLocation(shaderProgram, 'aColor');
     gl.vertexAttribPointer(
-        colorAttrib, 
-        3, 
-        gl.FLOAT, 
-        gl.FALSE, 
-        5 * Float32Array.BYTES_PER_ELEMENT, 
+        colorAttrib,
+        3,
+        gl.FLOAT,
+        gl.FALSE,
+        5 * Float32Array.BYTES_PER_ELEMENT,
         2 * Float32Array.BYTES_PER_ELEMENT);
     gl.enableVertexAttribArray(colorAttrib);
     return n;
@@ -247,26 +257,36 @@ function draw5() {
 }
 
 function init5Buffers() {
+    var changeDirection = false;
+    horizontalDelta += horizontalSpeed;
     var vertices = [
-        0.35, 0.55, 0.0,0.0,0.0,
-        0.05, 0.55, 0.0,0.0,0.0,
-        0.05, 0.55, 0.0,0.0,0.0,
-        0.05, 0.2,  0.0,0.0,0.0,
+        0.35+horizontalDelta, 0.55, 0.0, 0.0, 0.0,
+        0.05+horizontalDelta, 0.55, 0.0, 0.0, 0.0,
+        0.05+horizontalDelta, 0.55, 0.0, 0.0, 0.0,
+        0.05+horizontalDelta, 0.2, 0.0, 0.0, 0.0,
     ];
     for (let i = 0; i < 180; i++) {
         let radiansX = i * Math.PI / 180;
         let radiansY = i * Math.PI / 180;
         var x = 0.05 + Math.sin(radiansX) / 3;
         var y = -Math.cos(radiansY) / 2.8 - 0.16
-        console.log(x)
         yTemp = y;
-        vertices.push(x);
+        vertices.push(x+horizontalDelta);
         vertices.push(y);
         vertices.push(0.0);
         vertices.push(0.0);
         vertices.push(0.0);
+
+        if (x+horizontalDelta > 1 || x+horizontalDelta < -1) {
+            changeDirection = true;
+        }
     }
-    var n = 182;
+    var n = 184;
+    
+    if (changeDirection){
+        horizontalSpeed *= -1;
+        changeDirection = false;
+    }
 
     var vertexBuffer = gl.createBuffer();
     if (!vertexBuffer) {
@@ -279,21 +299,21 @@ function init5Buffers() {
 
     var posAttrib = gl.getAttribLocation(shaderProgram, 'aPosition');
     gl.vertexAttribPointer(
-        posAttrib, 
-        2, 
-        gl.FLOAT, 
-        gl.FALSE, 
-        5 * Float32Array.BYTES_PER_ELEMENT, 
+        posAttrib,
+        2,
+        gl.FLOAT,
+        gl.FALSE,
+        5 * Float32Array.BYTES_PER_ELEMENT,
         0);
     gl.enableVertexAttribArray(posAttrib);
 
     var colorAttrib = gl.getAttribLocation(shaderProgram, 'aColor');
     gl.vertexAttribPointer(
-        colorAttrib, 
-        3, 
-        gl.FLOAT, 
-        gl.FALSE, 
-        5 * Float32Array.BYTES_PER_ELEMENT, 
+        colorAttrib,
+        3,
+        gl.FLOAT,
+        gl.FALSE,
+        5 * Float32Array.BYTES_PER_ELEMENT,
         2 * Float32Array.BYTES_PER_ELEMENT);
     gl.enableVertexAttribArray(colorAttrib);
     return n;
@@ -329,7 +349,7 @@ function init8Buffers() {
         vertices.push(x);
         vertices.push(y);
     }
-   
+
     for (let i = 0; i < 180; i++) {
         var radiansX = i * Math.PI / 180;
         var radiansY = i * Math.PI / 180;
