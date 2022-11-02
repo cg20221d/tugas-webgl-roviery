@@ -25,6 +25,9 @@ function main() {
     attribute vec2 aPosition;
     attribute vec3 aColor;
     varying vec3 vColor;
+    uniform mat4 uModel;
+    uniform mat4 uView;
+    uniform mat4 uProj;
     void main() {
         vColor = aColor;
         gl_PointSize = 3.0;
@@ -59,13 +62,16 @@ function main() {
     gl.linkProgram(shaderProgram);
     gl.useProgram(shaderProgram);
 
-    gl.clearColor(0.75, 0.85, 0.8, 1.0);
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    drawR();
-    drawY();
-    draw5();
-    draw8();
+    
+    function render(){
+        gl.clearColor(0.75, 0.85, 0.8, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        drawR();
+        drawY();
+        draw5();
+        draw8();
+    }
+    setInterval(render, 1000/60);
 }
 
 function drawR() {
