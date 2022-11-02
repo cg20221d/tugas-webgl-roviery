@@ -62,6 +62,16 @@ function main() {
     gl.linkProgram(shaderProgram);
     gl.useProgram(shaderProgram);
 
+    var uModel = gl.getUniformLocation(shaderProgram, 'uModel');
+    var uView = gl.getUniformLocation(shaderProgram, 'uView');
+    var uProj = gl.getUniformLocation(shaderProgram, 'uProj');
+
+    var modelMatrix = new Float32Array(16);
+	var viewMatrix = new Float32Array(16);
+	var projMatrix = new Float32Array(16);
+	glMatrix.mat4.identity(modelMatrix);
+	glMatrix.mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
+	glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(70), canvas.clientWidth / canvas.clientHeight, 0.5, 50.0);
     
     function render(){
         gl.clearColor(0.75, 0.85, 0.8, 1.0);
