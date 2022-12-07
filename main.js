@@ -204,7 +204,7 @@ function main() {
     uniform vec3 uAmbientConstant;
     uniform float uAmbientIntensity;
     void main() {
-        vec3 ambient = uAmbientConstant + uAmbientIntensity;
+        vec3 ambient = uAmbientConstant * uAmbientIntensity;
         vec3 phong = ambient;
         gl_FragColor = vec4(phong * vColor, 1.0);
     }
