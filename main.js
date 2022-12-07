@@ -162,6 +162,18 @@ var vertices = [
     2, 0.2, 3.5, 0, 1, 1,    // Index: 118
     1.2, 1, 3.5, 0, 1, 1,    // Index: 119
     2.5, 1, 3.5, 0, 1, 1,    // Index: 120
+
+    /* === Kubus === */
+    // Face A       // Red      // Surface orientation
+    -1, 1, 1,      1, 1, 1, // Index:  121    
+    1, 1, 1,       1, 1, 1,  // Index:  122
+    -1, -1, 1,     1, 1, 1,    // Index:  123
+    1, -1, 1,      1, 1, 1,    // Index:  124
+
+    -1, 1, -1,      1, 0, 1, // Index:  125    
+    1, 1, -1,       1, 0, 1,  // Index:  126
+    -1, -1, -1,     1, 0, 1,    // Index:  127
+    1, -1, -1,      1, 0, 1,    // Index:  128
 ];
 
 function main() {
@@ -241,10 +253,11 @@ function main() {
         gl.clearColor(0.75, 0.85, 0.8, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        drawR();
+        // drawR();
         drawY();
         draw5();
-        draw8();
+        // draw8();
+        drawCube();
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
@@ -507,6 +520,61 @@ function draw8() {
     model = glMatrix.mat4.create();
     glMatrix.mat4.scale(
         model, model, [scale, scale, scale]
+    );
+    gl.uniformMatrix4fv(uModel, false, model);
+    gl.uniformMatrix4fv(uView, false, view);
+    gl.uniformMatrix4fv(uProjection, false, perspective);
+    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+}
+
+function drawCube() {
+    var indices = [
+        // front
+        121, 122, 123,  122, 123, 124,
+        
+        // back
+        125, 126, 127,  126, 127, 128,
+
+        // left
+        121, 125, 123,  125, 127, 123,
+
+        // right
+        122, 126, 124,  124, 126, 128,
+
+        // top
+        121, 122, 125,  122, 125, 126,
+        // bottom
+        123, 124, 127,  124, 127, 128
+    ];
+
+    var aPosition = gl.getAttribLocation(shaderProgram, "aPosition");
+    gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false,
+        6 * Float32Array.BYTES_PER_ELEMENT,
+        0);
+    gl.enableVertexAttribArray(aPosition);
+
+    var aColor = gl.getAttribLocation(shaderProgram, "aColor");
+    gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false,
+        6 * Float32Array.BYTES_PER_ELEMENT,
+        3 * Float32Array.BYTES_PER_ELEMENT);
+    gl.enableVertexAttribArray(aColor);
+
+    var buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+    var indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+    thetaX += thetaXSpeed;
+    thetaY += thetaYSpeed;
+    model = glMatrix.mat4.create();
+    glMatrix.mat4.rotateX(
+        model, model, thetaX
+    );
+    glMatrix.mat4.rotateY(
+        model, model, thetaY
     );
     gl.uniformMatrix4fv(uModel, false, model);
     gl.uniformMatrix4fv(uView, false, view);
