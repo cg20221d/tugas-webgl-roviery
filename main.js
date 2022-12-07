@@ -6,6 +6,8 @@ var thetaXSpeed = 0.0;
 var thetaX = 0.0;
 var cubeHorizontalDelta = 0.0;
 var cubeHorizontalSpeed = 0.0;
+var cubeZDelta = 0.0;
+var cubeZSpeed = 0.0;
 var horizontalDelta = 0.0;
 var horizontalSpeed = 0.0258;
 var scaleSpeed = 0.0258;
@@ -251,6 +253,8 @@ function main() {
         if (event.keyCode == 39) thetaYSpeed = 0.05;
         if (event.keyCode == 38) thetaXSpeed = -0.05;
         if (event.keyCode == 40) thetaXSpeed = 0.05;
+        if (event.keyCode == 73) cubeZSpeed = -0.0258;
+        if (event.keyCode == 75) cubeZSpeed = 0.0258;
         if (event.keyCode == 74) cubeHorizontalSpeed = -0.0258;
         if (event.keyCode == 76) cubeHorizontalSpeed = 0.0258;
     }
@@ -581,9 +585,10 @@ function drawCube() {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
     cubeHorizontalDelta += cubeHorizontalSpeed;
+    cubeZDelta += cubeZSpeed
     model = glMatrix.mat4.create();
     glMatrix.mat4.translate(
-        model, model, [cubeHorizontalDelta, 0.0, 0.0]
+        model, model, [cubeHorizontalDelta, 0.0, cubeZDelta]
     );
     gl.uniformMatrix4fv(uModel, false, model);
     gl.uniformMatrix4fv(uView, false, view);
