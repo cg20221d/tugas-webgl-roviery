@@ -261,6 +261,8 @@ function main() {
     function onKeyup(event) {
         if (event.keyCode == 37 || event.keyCode == 39) thetaYSpeed = 0.0;
         if (event.keyCode == 38 || event.keyCode == 40) thetaXSpeed = 0.0;
+        if (event.keyCode == 73 || event.keyCode == 75) cubeZSpeed = 0.0;
+        if (event.keyCode == 74 || event.keyCode == 76) cubeHorizontalSpeed = 0.0;
     }
     document.addEventListener("keydown", onKeydown);
     document.addEventListener("keyup", onKeyup);
