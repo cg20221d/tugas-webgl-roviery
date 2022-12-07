@@ -201,8 +201,12 @@ function main() {
     var fragmentShaderCode = `
     precision mediump float;
     varying vec3 vColor;
+    uniform vec3 uAmbientConstant;
+    uniform float uAmbientIntensity;
     void main() {
-        gl_FragColor = vec4(vColor, 1.0);
+        vec3 ambient = uAmbientConstant + uAmbientIntensity;
+        vec3 phong = ambient;
+        gl_FragColor = vec4(phong * vColor, 1.0);
     }
     `;
     var fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
@@ -235,6 +239,11 @@ function main() {
     perspective = glMatrix.mat4.create();
     glMatrix.mat4.perspective(perspective, glMatrix.glMatrix.toRadian(75), 1.0, 0.5, 50.0);
 
+    var uAmbientConstant = gl.getUniformLocation(shaderProgram, "uAmbientConstant");
+    var uAmbientIntensity = gl.getUniformLocation(shaderProgram, "uAmbientIntensity");
+    gl.uniform3fv(uAmbientConstant, [1.0, 1.0, 1.0]);
+    gl.uniform1f(uAmbientIntensity, 0.758);
+
     function onKeydown(event) {
         if (event.keyCode == 37) thetaYSpeed = -0.05;
         if (event.keyCode == 39) thetaYSpeed = 0.05;
@@ -250,7 +259,7 @@ function main() {
 
     function render() {
         gl.enable(gl.DEPTH_TEST);
-        gl.clearColor(0.75, 0.85, 0.8, 1.0);
+        gl.clearColor(0, 0, 0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // drawR();
